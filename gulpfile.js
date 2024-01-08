@@ -58,7 +58,7 @@ gulp.task('css', function() {
 gulp.task('js', function() {
     return gulp.src(paths.src.js)
     .pipe(uglify())
-    .pipe(concat('johndoe.js'))
+    .pipe(concat('eugenflocea.js'))
     .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest(paths.dist.js))
     .pipe(browserSync.stream());
