@@ -1,6 +1,7 @@
 // node.js Packages / Dependencies
 const gulp          = require('gulp');
-const sass          = require('gulp-sass');
+const sassCompiler = require('sass');
+const sass = require('gulp-sass')(sassCompiler);
 const uglify        = require('gulp-uglify');
 const rename        = require('gulp-rename');
 const concat        = require('gulp-concat');
@@ -14,27 +15,50 @@ const clean         = require('gulp-clean');
 
 
 // Paths
+// var paths = {
+//     root: { 
+//         www:        './public_html'
+//     },
+//     src: {
+//         root:       'public_html/assets',
+//         html:       'public_html/**/*.html',
+//         css:        'public_html/assets/css/*.css',
+//         js:         'public_html/assets/js/*.js',
+//         vendors:    'public_html/assets/vendors/**/*.*',
+//         imgs:       'public_html/assets/imgs/**/*.+(png|jpg|gif|svg)',
+//         scss:       'public_html/assets/scss/**/*.scss'
+//     },
+//     dist: {
+//         root:       'public_html/dist',
+//         css:        'public_html/dist/css',
+//         js:         'public_html/dist/js',
+//         imgs:       'public_html/dist/imgs',
+//         vendors:    'public_html/dist/vendors'
+//     }
+// }
+
+// Paths
 var paths = {
     root: { 
-        www:        './public_html'
+        www:        './'              // serve the project root where index.html is
     },
     src: {
-        root:       'public_html/assets',
-        html:       'public_html/**/*.html',
-        css:        'public_html/assets/css/*.css',
-        js:         'public_html/assets/js/*.js',
-        vendors:    'public_html/assets/vendors/**/*.*',
-        imgs:       'public_html/assets/imgs/**/*.+(png|jpg|gif|svg)',
-        scss:       'public_html/assets/scss/**/*.scss'
+        root:       'assets',
+        html:       './*.html',
+        css:        'assets/css/*.css',
+        js:         'assets/js/*.js',
+        vendors:    'assets/vendors/**/*.*',
+        imgs:       'assets/imgs/**/*.+(png|jpg|gif|svg)',
+        scss:       'assets/scss/**/*.scss'
     },
     dist: {
-        root:       'public_html/dist',
-        css:        'public_html/dist/css',
-        js:         'public_html/dist/js',
-        imgs:       'public_html/dist/imgs',
-        vendors:    'public_html/dist/vendors'
+        root:       'assets',         // keep outputs in assets for now
+        css:        'assets/css',
+        js:         'assets/js',
+        imgs:       'assets/imgs',
+        vendors:    'assets/vendors'
     }
-}
+};
 
 // Compile SCSS
 gulp.task('sass', function() {
@@ -98,10 +122,15 @@ gulp.task('build', gulp.series('sass', 'css', 'js', 'vendors', 'img'));
 gulp.task('watch', function() {
     browserSync.init({
         server: {
-            baseDir: paths.root.www
-        } 
+            baseDir: paths.root.www,
+            index: 'index.html'
+        }
     })
     gulp.watch(paths.src.scss, gulp.series('sass'));
     gulp.watch(paths.src.js).on('change', browserSync.reload);
     gulp.watch(paths.src.html).on('change', browserSync.reload);
 });
+
+// ... existing tasks ...
+
+gulp.task('default', gulp.series('build', 'watch'));
