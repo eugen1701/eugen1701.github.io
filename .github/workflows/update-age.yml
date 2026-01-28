@@ -1,0 +1,42 @@
+name: Update age and days-to-birthday
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # Every day at 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  update-age:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run age update script
+        run: npm run update-age
+
+      - name: Commit and push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git status --porcelain | grep -q 'index.html'; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add index.html
+            git commit -m "chore: update age and days to next birthday [skip ci]"
+            git push
+          else
+            echo "No changes to commit."
+          fi
+
